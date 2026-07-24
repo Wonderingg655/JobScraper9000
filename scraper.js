@@ -121,8 +121,7 @@ form.addEventListener('submit', async (e) => {
   try {
     const results = await Promise.all([
       scrapeBkk(searchTerm, wfh),
-      scrapeJobthai(searchTerm, wfh, hybrid),
-      scrapeSdb(searchTerm, wfh, hybrid)
+      scrapeJobthai(searchTerm, wfh, hybrid)
     ]);
 
     let allData = [];
