@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Scraper 9000</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Athiti:wght@200;300;400;500;600;700&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <div>
+          <h1>Job Scraper 9000</h1>
+          <p>A simple experimental project for learning web scraping with JavaScript</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="card input-section">
+      <h2>Configure Scraper</h2>
+
+      <form id="scrapeForm">
+        <div class="form-group">
+          <label for="searchTerm">Search Term</label>
+          <input type="text" id="searchTerm" placeholder="e.g. accountant, developer, etc.">
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" id="wfhCheck">
+            Work From Home
+          </label>
+        </div>
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" id="hybridCheck">
+            Hybrid Work
+          </label>
+        </div>
+
+        <button type="submit" id="scrapeBtn">Scrape All</button>
+        <div id="progressWrap" style="display:none;margin-top:16px;">
+          <div id="progressBar"><div id="progressFill"></div></div>
+          <span id="progressLabel">0%</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="card results-section" id="resultsSection" style="display:none;">
+      <h2>Results</h2>
+      <div class="result-info">
+        <span id="rowCount">0 rows</span>
+        <button id="exportCsvBtn">Export CSV</button>
+        <button id="clearBtn">Clear</button>
+      </div>
+      <div class="table-wrapper">
+        <table id="resultsTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>Built with vanilla HTML, CSS &amp; JavaScript | Uses a local PHP proxy for cross-origin requests</p>
+    </footer>
+  </div>
+
+  <script src="scraperbkk.js"></script>
+  <script src="scraperjobthai.js"></script>
+  <script src="scrapersdb.js"></script>
+  <script src="scraper.js"></script>
+</body>
+</html>

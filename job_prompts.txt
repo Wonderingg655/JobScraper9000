@@ -1,0 +1,24 @@
+Analyze my resume 
+
+read my csv, then add new column called "rating" and rate 0-100 these jobs sort from highest to lowest based on compatibility with my resume and based on these prompts 
+
+
+"+points for 3d graphic designer, 
+
++art job,
+
++digital art job, 
+
++date(sooner = better), 
+
+-points for Pay as agreed or blank,
+
+-points for non artist job,
+
+-points for unmatched major,
+
+-points for non digital job" 
+
+
+
+, add new column list detailed reason for the rating
