@@ -1,6 +1,10 @@
-const PROXY_LIST = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const isNetlify = location.hostname.endsWith('netlify.app');
+const PROXY_LIST = isLocal
   ? ['proxy.php?url=']
-  : ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
+  : isNetlify
+    ? ['/.netlify/functions/proxy?url=']
+    : ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
 
 async function proxyFetch(url) {
   let lastErr;
