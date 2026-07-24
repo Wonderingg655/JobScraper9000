@@ -1,10 +1,11 @@
 const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 const isNetlify = location.hostname.endsWith('netlify.app');
+const PUBLIC_PROXIES = ['https://corsproxy.io/?url=', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
 const PROXY_LIST = isLocal
   ? ['proxy.php?url=']
   : isNetlify
-    ? ['/.netlify/functions/proxy?url=']
-    : ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
+    ? ['/.netlify/functions/proxy?url=', ...PUBLIC_PROXIES]
+    : PUBLIC_PROXIES;
 
 async function proxyFetch(url) {
   let lastErr;
@@ -119,7 +120,8 @@ form.addEventListener('submit', async (e) => {
   setProgress(0);
 
   try {
-    const results = await Promise.all([
+    const SOURCE_NAMES = ['JobBKK', 'JobThai', 'JobsDB'];
+    const settled = await Promise.allSettled([
       scrapeBkk(searchTerm, wfh),
       scrapeJobthai(searchTerm, wfh, hybrid),
       scrapeSdb(searchTerm, wfh, hybrid)
@@ -127,15 +129,21 @@ form.addEventListener('submit', async (e) => {
 
     let allData = [];
     let allColumns = ['Time', 'Title', 'Company', 'Salary', 'URL', 'Info', 'Source'];
+    const failedSources = [];
 
-    for (const result of results) {
-      if (result.data.length > 0) {
-        allData = allData.concat(result.data);
+    settled.forEach((result, i) => {
+      if (result.status === 'fulfilled') {
+        if (result.value.data.length > 0) allData = allData.concat(result.value.data);
+      } else {
+        failedSources.push(SOURCE_NAMES[i]);
+        console.warn(SOURCE_NAMES[i] + ' scrape failed:', result.reason);
       }
-    }
+    });
 
     if (allData.length === 0) {
-      alert('No job listings found on any site.');
+      alert(failedSources.length > 0
+        ? 'Scrape failed for all sites (' + failedSources.join(', ') + ').'
+        : 'No job listings found on any site.');
       return;
     }
 
@@ -143,6 +151,9 @@ form.addEventListener('submit', async (e) => {
     setProgress(100);
     renderTable(allColumns, allData);
     resultsSection.style.display = 'block';
+    if (failedSources.length > 0) {
+      alert('Could not fetch results from: ' + failedSources.join(', ') + '. Showing results from the remaining sites.');
+    }
   } catch (err) {
     alert('Scrape failed: ' + err.message);
   } finally {
