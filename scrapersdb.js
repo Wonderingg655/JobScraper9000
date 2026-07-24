@@ -9,7 +9,7 @@ async function scrapeSdb(searchTerm, wfh, hybrid) {
   const selectors = selectorsRaw.split(',').map(s => s.trim());
   const columns = columnsRaw.split(',').map(s => s.trim());
 
-  const resp = await fetch(window.PROXY + encodeURIComponent(TARGET_URL));
+  const resp = await proxyFetch(TARGET_URL);
   if (!resp.ok) throw new Error(`SDB HTTP ${resp.status}`);
   const html = await resp.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -44,7 +44,7 @@ async function scrapeSdb(searchTerm, wfh, hybrid) {
   while (pageUrl && pageNum <= 5) {
     const fullUrl = pageUrl.startsWith('http') ? pageUrl : 'https://th.jobsdb.com' + pageUrl;
     try {
-      const pResp = await fetch(window.PROXY + encodeURIComponent(fullUrl));
+      const pResp = await proxyFetch(fullUrl);
       if (!pResp.ok) break;
       const pHtml = await pResp.text();
       const pDoc = new DOMParser().parseFromString(pHtml, 'text/html');
@@ -79,7 +79,7 @@ async function scrapeSdb(searchTerm, wfh, hybrid) {
     const results = await Promise.all(batch.map(async (url) => {
       const detailUrl = url.startsWith('http') ? url : 'https://th.jobsdb.com' + url;
       try {
-        const resp = await fetch(window.PROXY + encodeURIComponent(detailUrl));
+        const resp = await proxyFetch(detailUrl);
         if (!resp.ok) return '';
         const html = await resp.text();
         const detailDoc = new DOMParser().parseFromString(html, 'text/html');

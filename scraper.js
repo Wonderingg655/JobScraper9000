@@ -1,7 +1,21 @@
-const PROXY = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-  ? 'proxy.php?url='
-  : 'https://corsproxy.io/?';
-window.PROXY = PROXY;
+const PROXY_LIST = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? ['proxy.php?url=']
+  : ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
+
+async function proxyFetch(url) {
+  let lastErr;
+  for (const proxy of PROXY_LIST) {
+    try {
+      const resp = await fetch(proxy + encodeURIComponent(url));
+      if (resp.ok) return resp;
+      lastErr = 'HTTP ' + resp.status;
+    } catch (e) {
+      lastErr = e.message;
+    }
+  }
+  throw new Error('All proxies failed. Last: ' + lastErr);
+}
+window.proxyFetch = proxyFetch;
 
 const form = document.getElementById('scrapeForm');
 const scrapeBtn = document.getElementById('scrapeBtn');

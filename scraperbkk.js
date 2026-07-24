@@ -8,7 +8,7 @@ async function scrapeBkk(searchTerm, wfh) {
   const columns = columnsRaw.split(',').map(s => s.trim());
 
   const url = encodeURI(TARGET_URL);
-  const resp = await fetch(window.PROXY + encodeURIComponent(url));
+  const resp = await proxyFetch(url);
   if (!resp.ok) throw new Error(`BKK HTTP ${resp.status}`);
   const html = await resp.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -42,7 +42,7 @@ async function scrapeBkk(searchTerm, wfh) {
       if (i >= extractedUrls.length) return;
       const detailUrl = extractedUrls[i].startsWith('http') ? extractedUrls[i] : 'https://www.jobbkk.com' + extractedUrls[i];
       try {
-        const resp = await fetch(window.PROXY + encodeURIComponent(detailUrl));
+        const resp = await proxyFetch(detailUrl);
         if (!resp.ok) { infoContents[i] = ''; continue; }
         const html = await resp.text();
         const detailDoc = new DOMParser().parseFromString(html, 'text/html');

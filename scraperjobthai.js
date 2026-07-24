@@ -7,7 +7,7 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
   const selectors = selectorsRaw.split(',').map(s => s.trim());
   const columns = columnsRaw.split(',').map(s => s.trim());
 
-  const resp = await fetch(window.PROXY + encodeURIComponent(TARGET_URL));
+  const resp = await proxyFetch(TARGET_URL);
   if (!resp.ok) throw new Error(`Jobthai HTTP ${resp.status}`);
   const html = await resp.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -46,7 +46,7 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
   }
   if (pageUrls.length > 0) {
     const pageResults = await Promise.allSettled(pageUrls.map(url =>
-      fetch(window.PROXY + encodeURIComponent(url)).then(r => { if (!r.ok) throw new Error(); return r.text(); })
+      proxyFetch(url).then(r => { if (!r.ok) throw new Error(); return r.text(); })
     ));
     pageResults.forEach(result => {
       if (result.status !== 'fulfilled') return;
@@ -78,7 +78,7 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
     const batch = extractedUrls.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.allSettled(batch.map(url => {
       const detailUrl = url.startsWith('http') ? url : 'https://www.jobthai.com/' + url;
-      return fetch(window.PROXY + encodeURIComponent(detailUrl))
+      return proxyFetch(detailUrl)
         .then(r => { if (!r.ok) throw new Error(); return r.text(); })
         .then(html => {
           const detailDoc = new DOMParser().parseFromString(html, 'text/html');
