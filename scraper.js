@@ -37,10 +37,19 @@ const progressWrap = document.getElementById('progressWrap');
 const progressFill = document.getElementById('progressFill');
 const progressLabel = document.getElementById('progressLabel');
 
+let progressSteps = 0;
+const TOTAL_STEPS = 6;
+
 function setProgress(pct) {
   progressFill.style.width = pct + '%';
   progressLabel.textContent = pct + '%';
 }
+
+function incProgress() {
+  progressSteps++;
+  setProgress(Math.min(99, Math.round((progressSteps / TOTAL_STEPS) * 100)));
+}
+window.incProgress = incProgress;
 
 let currentData = [];
 
@@ -117,6 +126,7 @@ form.addEventListener('submit', async (e) => {
   scrapeBtn.disabled = true;
   scrapeBtn.textContent = 'Scraping all sites...';
   progressWrap.style.display = 'flex';
+  progressSteps = 0;
   setProgress(0);
 
   try {

@@ -31,6 +31,34 @@ async function scrapeBkk(searchTerm, wfh) {
     row['Source'] = 'JobBKK';
     data.push(row);
   });
+  window.incProgress();
+
+  // Multi-page: pages 2-15
+  const pagePromises = [];
+  for (let p = 2; p <= 15; p++) {
+    const pageUrl = TARGET_URL.replace('/lists/1/', '/lists/' + p + '/');
+    pagePromises.push(proxyFetch(encodeURI(pageUrl)).then(r => r.ok ? r.text() : null));
+  }
+  const pageResults = await Promise.allSettled(pagePromises);
+  for (const result of pageResults) {
+    if (result.status !== 'fulfilled' || !result.value) continue;
+    const pDoc = new DOMParser().parseFromString(result.value, 'text/html');
+    const pContainers = pDoc.querySelectorAll('.joblist-boxrow');
+    pContainers.forEach(container => {
+      const row = {};
+      selectors.forEach((sel, colIdx) => {
+        const el = container.querySelector(sel);
+        row[columns[colIdx]] = el ? cleanText(el.textContent.trim()) : '';
+      });
+      const linkEl = container.querySelector('.joblist-name-urgent span a');
+      const href = linkEl ? linkEl.getAttribute('href') : '';
+      if (href) extractedUrls.push(href);
+      row['URL'] = href;
+      row['Source'] = 'JobBKK';
+      data.push(row);
+    });
+  }
+  window.incProgress();
 
   // Detail page scraping with concurrency
   const infoContents = [];
@@ -61,6 +89,7 @@ async function scrapeBkk(searchTerm, wfh) {
     }
   }
   await Promise.all(Array(CONCURRENCY).fill().map(() => fetchOne()));
+  window.incProgress();
 
   data.forEach((row, i) => { row['Info'] = infoContents[i] || ''; });
   return { columns: [...columns, 'URL', 'Info', 'Source'], data };

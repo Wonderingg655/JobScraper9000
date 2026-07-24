@@ -215,9 +215,6 @@ th, td {
 th:nth-child(4) {
   width: 70px;
 }
-th:nth-child(4), td:nth-child(4) {
-  text-align: center;
-}
 
 .copy-btn {
   padding: 4px 10px;

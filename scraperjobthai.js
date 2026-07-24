@@ -33,13 +33,14 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
     row['Source'] = 'JobThai';
     data.push(row);
   });
+  window.incProgress();
 
   // Multi-page: fetch pages 2-5 in parallel
   const pageUrls = [];
   const pageLinks = doc.querySelectorAll('a.page-item');
   for (const link of pageLinks) {
     const num = parseInt(link.textContent.trim(), 10);
-    if (!isNaN(num) && num >= 2 && num <= 5) {
+    if (!isNaN(num) && num >= 2 && num <= 15) {
       const h = link.getAttribute('href');
       if (h) pageUrls.push(h.startsWith('http') ? h : 'https://www.jobthai.com' + h);
     }
@@ -70,6 +71,7 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
       });
     });
   }
+  window.incProgress();
 
   // Detail pages in batches
   const infoContents = [];
@@ -99,6 +101,7 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
     }));
     batchResults.forEach(r => infoContents.push(r.status === 'fulfilled' ? r.value : ''));
   }
+  window.incProgress();
 
   data.forEach((row, i) => { row['Info'] = infoContents[i] || ''; });
   return { columns: [...columns, 'URL', 'Info', 'Source'], data };
