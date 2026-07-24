@@ -123,8 +123,7 @@ form.addEventListener('submit', async (e) => {
     const SOURCE_NAMES = ['JobBKK', 'JobThai', 'JobsDB'];
     const settled = await Promise.allSettled([
       scrapeBkk(searchTerm, wfh),
-      scrapeJobthai(searchTerm, wfh, hybrid),
-      scrapeSdb(searchTerm, wfh, hybrid)
+      scrapeJobthai(searchTerm, wfh, hybrid)
     ]);
 
     let allData = [];
