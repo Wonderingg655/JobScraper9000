@@ -1,11 +1,14 @@
 const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 const isNetlify = location.hostname.endsWith('netlify.app');
+const isVercel = location.hostname.endsWith('vercel.app');
 const PUBLIC_PROXIES = ['https://corsproxy.io/?url=', 'https://api.allorigins.win/raw?url=', 'https://api.codetabs.com/v1/proxy?quest='];
 const PROXY_LIST = isLocal
   ? ['proxy.php?url=']
   : isNetlify
     ? ['/.netlify/functions/proxy?url=', ...PUBLIC_PROXIES]
-    : PUBLIC_PROXIES;
+    : isVercel
+      ? ['/api/proxy?url=', ...PUBLIC_PROXIES]
+      : PUBLIC_PROXIES;
 
 async function proxyFetch(url) {
   let lastErr;
