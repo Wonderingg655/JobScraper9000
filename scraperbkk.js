@@ -11,8 +11,10 @@ async function scrapeBkk(searchTerm, wfh) {
   const resp = await proxyFetch(url);
   if (!resp.ok) throw new Error(`BKK HTTP ${resp.status}`);
   const html = await resp.text();
+  console.log('[JobBKK] Page 1 fetched:', html.length, 'bytes');
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const containers = doc.querySelectorAll('.joblist-boxrow');
+  console.log('[JobBKK] Containers found:', containers.length);
 
   if (containers.length === 0) return { columns: [...columns, 'URL', 'Info', 'Source'], data: [] };
 
@@ -60,14 +62,15 @@ async function scrapeBkk(searchTerm, wfh) {
   }
   window.incProgress();
 
-  // Detail page scraping with concurrency
+  // Detail page scraping with concurrency (cap to first 30 for speed)
   const infoContents = [];
   const CONCURRENCY = 3;
+  const MAX_DETAILS = 30;
   let idx = 0;
   async function fetchOne() {
     while (true) {
       const i = idx++;
-      if (i >= extractedUrls.length) return;
+      if (i >= extractedUrls.length || i >= MAX_DETAILS) return;
       const detailUrl = extractedUrls[i].startsWith('http') ? extractedUrls[i] : 'https://www.jobbkk.com' + extractedUrls[i];
       try {
         const resp = await proxyFetch(detailUrl);

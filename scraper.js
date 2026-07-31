@@ -131,6 +131,7 @@ form.addEventListener('submit', async (e) => {
   progressWrap.style.display = 'flex';
   progressSteps = 0;
   setProgress(0);
+  console.log('[scraper] Starting scrape for:', searchTerm);
 
   try {
     const SOURCE_NAMES = ['JobBKK', 'JobThai'];
@@ -146,9 +147,10 @@ form.addEventListener('submit', async (e) => {
     settled.forEach((result, i) => {
       if (result.status === 'fulfilled') {
         if (result.value.data.length > 0) allData = allData.concat(result.value.data);
+        console.log('[scraper] ' + SOURCE_NAMES[i] + ' OK:', result.value.data.length, 'rows');
       } else {
         failedSources.push(SOURCE_NAMES[i]);
-        console.warn(SOURCE_NAMES[i] + ' scrape failed:', result.reason);
+        console.warn('[scraper] ' + SOURCE_NAMES[i] + ' scrape failed:', result.reason);
       }
     });
 

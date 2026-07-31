@@ -73,10 +73,11 @@ async function scrapeJobthai(searchTerm, wfh, hybrid) {
   }
   window.incProgress();
 
-  // Detail pages in batches
+  // Detail pages in batches (cap to first 30 for speed)
   const infoContents = [];
   const BATCH_SIZE = 6;
-  for (let i = 0; i < extractedUrls.length; i += BATCH_SIZE) {
+  const MAX_DETAILS = 30;
+  for (let i = 0; i < Math.min(extractedUrls.length, MAX_DETAILS); i += BATCH_SIZE) {
     const batch = extractedUrls.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.allSettled(batch.map(url => {
       const detailUrl = url.startsWith('http') ? url : 'https://www.jobthai.com/' + url;
